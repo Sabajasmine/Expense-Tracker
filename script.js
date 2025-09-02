@@ -1,69 +1,99 @@
-const generateBtn = document.getElementById("generate-btn");
-const paletteContainer = document.querySelector(".palette-container");
+const balanceEl = document.getElementById("balance");
+const incomeAmountEl = document.getElementById("income-amount");
+const expenseAmountEl = document.getElementById("expense-amount");
+const transactionListEl = document.getElementById("transaction-list");
+const transactionFormEl = document.getElementById("transaction-form");
+const descriptionEl = document.getElementById("description");
+const amountEl = document.getElementById("amount");
 
-generateBtn.addEventListener("click", generatePalette);
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 
-paletteContainer.addEventListener("click", function (e) {
-  if (e.target.classList.contains("copy-btn")) {
-    const hexValue = e.target.previousElementSibling.textContent;
+transactionFormEl.addEventListener("submit", addTransaction);
 
-    navigator.clipboard
-      .writeText(hexValue)
-      .then(() => showCopySuccess(e.target))
-      .catch((err) => console.log(err));
-  } else if (e.target.classList.contains("color")) {
-    const hexValue = e.target.nextElementSibling.querySelector(".hex-value").textContent;
-    navigator.clipboard
-      .writeText(hexValue)
-      .then(() => showCopySuccess(e.target.nextElementSibling.querySelector(".copy-btn")))
-      .catch((err) => console.log(err));
-  }
-});
+function addTransaction(e) {
+  e.preventDefault();
 
-function showCopySuccess(element) {
-  element.classList.remove("far", "fa-copy");
-  element.classList.add("fas", "fa-check");
+  // get form values
+  const description = descriptionEl.value.trim();
+  const amount = parseFloat(amountEl.value);
 
-  element.style.color = "#48bb78";
+  transactions.push({
+    id: Date.now(),
+    description,
+    amount,
+  });
 
-  setTimeout(() => {
-    element.classList.remove("fas", "fa-check");
-    element.classList.add("far", "fa-copy");
-    element.style.color = "";
-  }, 1500);
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+
+  updateTransactionList();
+  updateSummary();
+
+  transactionFormEl.reset();
 }
 
-function generatePalette() {
-  const colors = [];
+function updateTransactionList() {
+  transactionListEl.innerHTML = "";
 
-  for (let i = 0; i < 5; i++) {
-    colors.push(generateRandomColor());
-  }
+  const sortedTransactions = [...transactions].reverse();
 
-  updatePaletteDisplay(colors);
-}
-
-function generateRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
-function updatePaletteDisplay(colors) {
-  const colorBoxes = document.querySelectorAll(".color-box");
-
-  colorBoxes.forEach((box, index) => {
-    const color = colors[index];
-    const colorDiv = box.querySelector(".color");
-    const hexValue = box.querySelector(".hex-value");
-
-    colorDiv.style.backgroundColor = color;
-    hexValue.textContent = color;
+  sortedTransactions.forEach((transaction) => {
+    const transactionEl = createTransactionElement(transaction);
+    transactionListEl.appendChild(transactionEl);
   });
 }
 
-// generatePalette();
+function createTransactionElement(transaction) {
+  const li = document.createElement("li");
+  li.classList.add("transaction");
+  li.classList.add(transaction.amount > 0 ? "income" : "expense");
+
+  li.innerHTML = `
+    <span>${transaction.description}</span>
+    <span>
+  
+    ${formatCurrency(transaction.amount)}
+      <button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button>
+    </span>
+  `;
+
+  return li;
+}
+
+function updateSummary() {
+  // 100, -50, 200, -200 => 50
+  const balance = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
+
+  const income = transactions
+    .filter((transaction) => transaction.amount > 0)
+    .reduce((acc, transaction) => acc + transaction.amount, 0);
+
+  const expenses = transactions
+    .filter((transaction) => transaction.amount < 0)
+    .reduce((acc, transaction) => acc + transaction.amount, 0);
+
+  // update ui => todo: fix the formatting
+  balanceEl.textContent = formatCurrency(balance);
+  incomeAmountEl.textContent = formatCurrency(income);
+  expenseAmountEl.textContent = formatCurrency(expenses);
+}
+
+function formatCurrency(number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(number);
+}
+
+function removeTransaction(id) {
+  // filter out the one we wanted to delete
+  transactions = transactions.filter((transaction) => transaction.id !== id);
+
+  localStorage.setItem("transcations", JSON.stringify(transactions));
+
+  updateTransactionList();
+  updateSummary();
+}
+
+// initial render
+updateTransactionList();
+updateSummary();
