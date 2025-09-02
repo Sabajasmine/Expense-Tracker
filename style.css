@@ -1,0 +1,268 @@
+/* Import Poppins Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #5a7bd6, #9bc9ff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Container */
+.container {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 850px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  animation: fadeIn 0.7s ease-in-out;
+  position: relative;
+}
+
+/* Heading */
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  position: relative;
+}
+
+h1::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #ff6ec7);
+  border-radius: 4px;
+  animation: slideIn 1s ease;
+}
+
+/* Button */
+#generate-btn {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+#generate-btn:hover {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow: 0 10px 25px rgba(118, 75, 162, 0.5);
+}
+
+#generate-btn:active {
+  transform: scale(0.98);
+}
+
+/* Ripple Effect */
+#generate-btn::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  width: 300%;
+  height: 300%;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s ease, opacity 0.8s ease;
+  opacity: 0;
+}
+
+#generate-btn:active::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Palette Grid */
+.palette-container {
+  display: grid;
+  gap: 1.3rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+/* Color Box */
+.color-box {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.35s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.color-box:hover {
+  transform: translateY(-10px) scale(1.06);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3);
+}
+
+/* Shine effect */
+.color-box::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.color-box:hover::before {
+  opacity: 1;
+  animation: shine 1s forwards;
+}
+
+/* Color */
+.color {
+  height: 130px;
+  position: relative;
+}
+
+/* Color Info */
+.color-info {
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hex-value {
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+/* Copy Button */
+.copy-btn {
+  cursor: pointer;
+  color: #64748b;
+  font-size: 1.3rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.copy-btn:hover {
+  color: #764ba2;
+  transform: scale(1.25) rotate(8deg);
+}
+
+/* Copy Tooltip */
+.copy-btn::after {
+  content: "Copy";
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: #333;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+.copy-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Success (when copied) */
+.copy-btn.copied::after {
+  content: "Copied!";
+  background: #48bb78;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from { width: 0; opacity: 0; }
+  to { width: 90px; opacity: 1; }
+}
+
+@keyframes shine {
+  from { transform: rotate(25deg) translateX(-200%); }
+  to { transform: rotate(25deg) translateX(200%); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .palette-container {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+}
+/* Palette Row (Single Line) */
+.palette-container {
+  display: flex;
+  gap: 1.3rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
+}
+
+/* Hide default scrollbar (optional) */
+.palette-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.palette-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.color-box {
+  min-width: 160px;  /* fixed width */
+  flex: 0 0 auto;    /* prevent shrinking */
+}
